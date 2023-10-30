@@ -32,7 +32,15 @@ export async function getFlights(req, res) {
     try {
         // Get DB
         const flights = await selectFlights(origin, destination);
-        res.send(flights.rows);
+        const flightsArray = flights.rows;
+        const sortedArray = flightsArray.sort((a, b) => {
+            const [dayA, monthA, yearA] = a.date.split('-');
+            const dateA = dayjs(`${yearA}-${monthA}-${dayA}`);
+            const [dayB, monthB, yearB] = b.date.split('-');
+            const dateB = dayjs(`${yearB}-${monthB}-${dayB}`);
+            return dateA.isBefore(dateB) ? -1 : 1
+        });
+        res.send(sortedArray);
     } catch (err) {
         res.status(500).send(err.message);
     }
