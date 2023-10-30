@@ -1,4 +1,4 @@
-import { searchCityById, insertFlight } from "../repositories/flight.repository.js";
+import { searchCityById, insertFlight, selectFlights } from "../repositories/flight.repository.js";
 import dayjs from "dayjs";
 
 export async function postFlight(req, res) {
@@ -21,6 +21,18 @@ export async function postFlight(req, res) {
         // Post DB
         const flight = await insertFlight(origin, destination, date);
         res.status(201).send(flight.rows[0]);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
+export async function getFlights(req, res) {
+    const { origin, destination } = req.query;
+
+    try {
+        // Get DB
+        const flights = await selectFlights(origin, destination);
+        res.send(flights.rows);
     } catch (err) {
         res.status(500).send(err.message);
     }
